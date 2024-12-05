@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Doação de Sangue</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+
+        .form-container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #d32f2f;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background-color: #b71c1c;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h1>Quero salvar vidas!</h1>
+    <form id="form" onsubmit="sendJson(event)">
+        <input type="text" id="nameField" name="name" placeholder="Digite o seu nome" required>
+        <button>Continuar</button>
+    </form>
+</div>
+</body>
+<script>
+    const submitButton = document.getElementById("nameBt");
+    const nameForm = document.getElementById("name");
+
+    submitButton.addEventListener('click', () => {
+        if (!nameForm.value) return;
+
+        localStorage.setItem("name", nameForm.value);
+        //window.location.replace("localhost:3000/campanha");
+    })
+
+    async function sendJson(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+            
+            const inputValue = document.getElementById("nameField").value;
+
+            if (!inputValue) {
+                alert("Por favor, insira um valor!");
+                return;
+            }
+
+            const jsonData = {
+                name: inputValue
+            };
+
+            try {
+                const response = await fetch("http://localhost:3000/campanha", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    alert("Resposta do servidor: " + JSON.stringify(responseData));
+                } else {
+                    alert("Erro ao enviar dados: " + response.statusText);
+                }
+            } catch (error) {
+                console.error("Erro:", error);
+                alert("Erro ao conectar com o servidor.");
+            }
+        }
+</script>
+</html>

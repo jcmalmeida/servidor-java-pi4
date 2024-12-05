@@ -1,0 +1,66 @@
+# Arquivos de compilação e pastas de saída
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# Diretórios de saída padrão
+/bin/
+/build/
+/out/
+/target/
+
+# Dependências locais e caches
+*.iml
+.gradle/
+*.hprof
+.mvn/
+.settings/
+.classpath
+.project
+.idea/
+*.ipr
+*.iws
+*.swp
+
+# Configurações do sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs e bancos de dados temporários
+*.log
+*.sql
+*.sqlite
+
+# Arquivos criados por Maven
+dependency-reduced-pom.xml
+release.properties
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+# Arquivos criados por Gradle
+.gradle/
+/build/
+
+# Arquivos criados por IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Arquivos criados por Eclipse
+.classpath
+.project
+.settings/
+
+# Arquivos criados pelo sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos específicos de IDEs (como VS Code)
+.vscode/
