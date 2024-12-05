@@ -67,49 +67,39 @@
 </div>
 </body>
 <script>
-    const submitButton = document.getElementById("nameBt");
-    const nameForm = document.getElementById("name");
-
-    submitButton.addEventListener('click', () => {
-        if (!nameForm.value) return;
-
-        localStorage.setItem("name", nameForm.value);
-        //window.location.replace("localhost:3000/campanha");
-    })
-
     async function sendJson(event) {
-            event.preventDefault(); // Impede o envio padrão do formulário
-            
-            const inputValue = document.getElementById("nameField").value;
+        event.preventDefault(); // Impede o envio padrão do formulário
+        
+        const inputValue = document.getElementById("nameField").value;
+        localStorage.setItem("name", inputValue);
 
-            if (!inputValue) {
-                alert("Por favor, insira um valor!");
-                return;
-            }
-
-            const jsonData = {
-                name: inputValue
-            };
-
-            try {
-                const response = await fetch("http://localhost:3000/campanha", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(jsonData)
-                });
-
-                if (response.ok) {
-                    const responseData = await response.json();
-                    alert("Resposta do servidor: " + JSON.stringify(responseData));
-                } else {
-                    alert("Erro ao enviar dados: " + response.statusText);
-                }
-            } catch (error) {
-                console.error("Erro:", error);
-                alert("Erro ao conectar com o servidor.");
-            }
+        if (!inputValue) {
+            alert("Por favor, insira um valor!");
+            return;
         }
+
+        const jsonData = {
+            name: inputValue
+        };
+
+        try {
+            const response = await fetch("http://localhost:3000/campanha", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(jsonData)
+            });
+
+            if (response.ok) {
+                window.location.replace("/campanha");
+            } else {
+                alert("Erro ao enviar dados: " + response.statusText);
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro ao conectar com o servidor.");
+        }
+    }
 </script>
 </html>

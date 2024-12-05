@@ -51,36 +51,18 @@ public class SupervisoraDeConexao extends Thread {
 
             for (;;) {
                 String request = this.user.send();
+
                 if (request == null)
                     return;
-                NewHttpHandler.handleRequest(this.user, request);
-//                else if (comunicado instanceof PedidoDeOperacao) {
-//                    PedidoDeOperacao pedidoDeOperacao = (PedidoDeOperacao) comunicado;
-//
-//                    switch (pedidoDeOperacao.getOperacao()) {
-//                        case '+':
-//                            this.valor += pedidoDeOperacao.getValor();
-//                            break;
-//
-//                        case '-':
-//                            this.valor -= pedidoDeOperacao.getValor();
-//                            break;
-//
-//                        case '*':
-//                            this.valor *= pedidoDeOperacao.getValor();
-//                            break;
-//
-//                        case '/':
-//                            this.valor /= pedidoDeOperacao.getValor();
-//                    }
-//                } else if (comunicado instanceof PedidoDeResultado) {
-//                    this.user.receba(new Resultado(this.valor));
-//                } else if (comunicado instanceof PedidoParaSair) {
-//                    synchronized (this.usuarios) {
-//                        this.usuarios.remove(this.usuario);
-//                    }
-//                    this.usuario.adeus();
-//                }
+
+                String req = NewHttpHandler.handleRequest(this.user, request);
+
+                if (req == "delete") {
+                    synchronized (this.users) {
+                        this.users.remove(this.user);
+                    }
+                    this.user.goodbye();
+                }
             }
         } catch (Exception erro) {
             try {

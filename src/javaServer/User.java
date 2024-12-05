@@ -2,8 +2,6 @@ package javaServer;
 
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 import java.util.concurrent.Semaphore;
 
 public class User {
@@ -13,6 +11,7 @@ public class User {
     private OutputStream output;
 
     private String proximoComunicado = null;
+    private String json = null;
 
     private Semaphore mutEx = new Semaphore (1,true);
 
@@ -31,8 +30,16 @@ public class User {
         this.output = output;
     }
 
-    public Socket getSocket() {
-        return this.socket;
+    public String getJson() {
+        return this.json;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void receive(String x) throws Exception {
@@ -47,25 +54,24 @@ public class User {
     public String send() throws Exception {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-            if (this.proximoComunicado == null)
+            if (this.proximoComunicado == null) {
                 this.proximoComunicado = reader.readLine();
-            String ret         = this.proximoComunicado;
+
+                boolean jsonDetected = false;
+                StringBuilder bodyBuilder = new StringBuilder();
+                while (reader.ready()) {
+                    char currentChar = (char) reader.read();
+                    if (currentChar == '{') jsonDetected = true;
+                    if (jsonDetected) bodyBuilder.append(currentChar);
+                }
+                json = bodyBuilder.toString();
+            }
+            String ret = this.proximoComunicado;
             this.proximoComunicado = null;
             return ret;
         } catch (Exception erro) {
             throw new Exception ("Erro de recepcao");
         }
-    }
-
-    public String sendJson() throws Exception {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-
-        StringBuilder requestBody = new StringBuilder();
-        while (reader.ready()) {
-            requestBody.append((char) reader.read());
-        }
-
-        return requestBody.toString();
     }
 
     public void receiveFileResponse(File file) throws IOException {
