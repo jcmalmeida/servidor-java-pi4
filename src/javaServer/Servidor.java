@@ -6,6 +6,8 @@ public class Servidor {
     public static String DEFAULT_PORT = "3000";
 
     public static void main(String[] args) {
+        System.out.println("Diretório de trabalho atual: " + System.getProperty("user.dir"));
+
         if (args.length > 1) {
             System.err.println("Uso esperado: java Servidor [PORTA]\n");
             return;
@@ -33,32 +35,23 @@ public class Servidor {
             String request = null;
             try {
                 request = Teclado.getUmString();
-            } catch (Exception erro) {}
+            } catch (Exception erro) {
+            }
 
-//            if (request.toLowerCase().equals("desativar"))
-//            {
-//                synchronized (usuarios)
-//                {
-//                    ComunicadoDeDesligamento comunicadoDeDesligamento =
-//                            new ComunicadoDeDesligamento ();
-//
-//                    for (Parceiro usuario:usuarios)
-//                    {
-//                        try
-//                        {
-//                            usuario.receba (comunicadoDeDesligamento);
-//                            usuario.adeus  ();
-//                        }
-//                        catch (Exception erro)
-//                        {}
-//                    }
-//                }
-//
-//                System.out.println ("O servidor foi desativado!\n");
-//                System.exit(0);
-//            }
-//            else
-//                System.err.println ("Comando invalido!\n");
+            if (request.toLowerCase().equals("desativar")) {
+                synchronized (users) {
+                    for (User user : users) {
+                        try {
+                            user.goodbye();
+                        } catch (Exception erro) {
+                        }
+                    }
+                }
+
+                System.out.println("O servidor foi desativado!\n");
+                System.exit(0);
+            } else
+                System.err.println("Comando invalido!\n");
         }
     }
 }

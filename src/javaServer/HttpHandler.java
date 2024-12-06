@@ -1,9 +1,13 @@
 package javaServer;
 
 import java.io.*;
-import com.google.gson.Gson;
+import java.util.List;
 
-public class NewHttpHandler {
+import com.google.gson.Gson;
+import javaServer.DAO.Campanhas;
+import javaServer.DBO.Campanha;
+
+public class HttpHandler {
 
     public static String handleRequest(User user, String request) {
         System.out.println("Current user: " + user.getName());
@@ -41,7 +45,7 @@ public class NewHttpHandler {
         return req;
     }
 
-    private static void handleGet(User user, String request) throws IOException {
+    private static void handleGet(User user, String request) throws Exception {
         System.out.println("Dados do GET recebidos: " + request);
 
         String requestLine = request.split("\n")[0];
@@ -50,8 +54,27 @@ public class NewHttpHandler {
 
         if (path.equals("/"))
             path = "/index.html";
-        else if (path.equals("/campanha"))
+        else if (path.equals("/campanha")) {
             path = "/campanha.html";
+
+            List<Campanha> campanhas = Campanhas.obter();
+            Campanha campanhaAtiva = null;
+            for (int i=0; i<campanhas.size(); i++) {
+                if (campanhas.get(i).isDisparoContatoFeito()) {
+                    campanhaAtiva = campanhas.get(i);
+                }
+            }
+
+            String textoCampanha = getTextoCampanha(campanhaAtiva, user);
+            String linkWhatsApp = getLinkWhatsApp(textoCampanha);
+
+            boolean flag = false;
+            while (!flag) {
+                flag = HtmlHandler.modify(user, textoCampanha, linkWhatsApp);
+            }
+
+            path = "/campanha_" + user.getName() + ".html";
+        }
         else if (path.equals("/blank"))
             path = "/blank.html";
 
@@ -87,6 +110,9 @@ public class NewHttpHandler {
         String json = user.getJson();
         Gson gson = new Gson();
         MyName myName = gson.fromJson(json, MyName.class);
+
+        HtmlHandler.delete(user);
+
         user.setName(myName.name);
 
         String body = "PUT recebido com sucesso";
@@ -118,5 +144,27 @@ public class NewHttpHandler {
 
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
+    }
+
+    private static String getTextoCampanha(Campanha campanhaAtiva, User user) {
+        if (campanhaAtiva == null)
+            return "Olá! Aqui é a/o " + user.getName() + ". " +
+                "Sei que você gosta muito de mim e seria meu doador de sangue caso eu precisasse. " +
+                "Neste momento, outras pessoas precisam deste gesto. Eu vou contribuir, vamos juntos colaborar? " +
+                "Acesse vidamais.com para saber como doar.";
+
+        return "Olá! Aqui é a/o " + user.getName() + ". " +
+                "Sei que você gosta muito de mim e seria meu doador de sangue caso eu precisasse.\n" +
+                "Neste momento, outras pessoas precisam deste gesto. Eu vou contribuir, vamos juntos colaborar? " +
+                "Seguem os dados: \n\n" +
+                "Instituição para doação: " + (campanhaAtiva.getIdHemocentro() == 1 ? "Hemocentro da Unicamp" : "Hemocentro mais próximo") + "\n" +
+                "Período de coleta: " + campanhaAtiva.getDataInicio() + " a " + campanhaAtiva.getDataFim() + ", das " +
+                campanhaAtiva.getHorarioInicio() + " às " + campanhaAtiva.getHorarioFim() + "\n" +
+                (campanhaAtiva.getIncentivo() == "" ? "" : ("Incentivo: " + campanhaAtiva.getIncentivo()));
+    }
+
+    private static String getLinkWhatsApp(String texto) {
+        String baseUrl = "https://wa.me/?text=";
+        return baseUrl + texto;
     }
 }

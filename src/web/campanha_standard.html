@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Doação de Sangue</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+
+        .form-container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #d32f2f;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background-color: #b71c1c;
+        }
+
+        section {
+            max-width: 1000px;
+        }
+
+        .message {
+            font-size: 18pix;
+            font-weight: 700;
+            padding-bottom: 20px;
+        }
+
+        .links-container {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .links-container a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .links-container a:hover {
+            color: #b71c1c;
+        }
+
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h1 id="main_title"><!--PLACEHOLDER1-->, obrigado pela atitude! ❤️</h1>
+    <section>
+        <p>Doar o seu sangue é apenas o primeiro passo... que tal conscientizar os familiares e amigos que tanto te amam que você poderia precisar da doação deles também? É simples e rápido! Clique no botão de compartilhar abaixo e mande ver! 🙏🏻😊</p>
+    </section>
+    <br>
+    <section class="message">
+        <p>
+            <!--PLACEHOLDER2-->
+            <br><br>
+            <a href="<!--PLACEHOLDER3-->">Compartilhar no WhatsApp</a>
+        </p>
+    </section>
+    
+    <div class="links-container">
+        <a href="#" id="correctNameLink" onclick="updateName()">Corrigir nome</a> | 
+        <a href="#" id="endSessionLink" onclick="endSession()">Finalizar</a>
+    </div>
+</div>
+</body>
+<script>
+    const mainTitle = document.getElementById("main_title");
+    const name = localStorage.getItem("name");
+    mainTitle.innerText = name + ", obrigado pela atitude! ❤️";
+
+    async function updateName() {
+        var correctedName = '';
+        do {
+            correctedName = prompt("Insira o seu nome corretamente:");
+        } while (correctedName == '');
+
+        localStorage.setItem("name", correctedName);
+
+        const jsonData = {
+            name: correctedName
+        };
+
+        try {
+            const response = await fetch("http://localhost:3000/campanha", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(jsonData)
+            });
+
+            if (response.ok) {
+                window.location.replace("/campanha");
+            } else {
+                alert("Erro ao enviar dados: " + response.statusText);
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro ao conectar com o servidor.");
+        }
+    }
+
+    async function endSession() {
+        localStorage.setItem("name", '');
+
+        try {
+            const response = await fetch("http://localhost:3000/campanha", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                window.location.replace("/blank");
+            } else {
+                alert("Erro ao enviar dados: " + response.statusText);
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro ao conectar com o servidor.");
+        }
+    }
+</script>
+</html>

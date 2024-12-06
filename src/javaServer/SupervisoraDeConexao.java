@@ -55,12 +55,13 @@ public class SupervisoraDeConexao extends Thread {
                 if (request == null)
                     return;
 
-                String req = NewHttpHandler.handleRequest(this.user, request);
+                String req = HttpHandler.handleRequest(this.user, request);
 
                 if (req == "delete") {
                     synchronized (this.users) {
                         this.users.remove(this.user);
                     }
+                    HtmlHandler.delete(user);
                     this.user.goodbye();
                 }
             }

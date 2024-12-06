@@ -64,3 +64,5 @@ Thumbs.db
 
 # Arquivos específicos de IDEs (como VS Code)
 .vscode/
+
+db.properties
